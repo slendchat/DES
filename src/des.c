@@ -1,42 +1,35 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdlib.h>
+
+#if defined(_WIN32) || defined(_WIN64)
 #include "..\inc\tables.h"
-#include "..\inc\libs.h"
+#include "..\inc\des.h"
+#else
+#include "../inc/tables.h"
+#include "../inc/des.h"
+#endif
 
-#define BUFF_MAX_SIZE 128 //64bits 8 bytes
+#define BUFF_MAX_SIZE 128 
 
-//returns buffer actual size in bytes
-int32_t fill_text_buffer(uint64_t *pdata);
-void print_binary8(uint8_t value);
-void print_binary32(uint32_t value);
-void print_binary64(uint64_t value);
+// TEMPORARY
+int des();
 
-uint64_t key_permutation(uint64_t key);
-void shifting_key_pairs(uint32_t shifted_key_pairs[16][2], uint64_t key_permutated);
-uint64_t join_half_keys(uint32_t keyleft, uint32_t keyright) ;
-void form_keys48b(uint32_t shifted_key_pairs[16][2], uint64_t *keys48b);
-void key_gen(uint64_t *keys48b, uint64_t key);
+int main(int argc, char* argv[])
+{
+  des();
+  return EXIT_SUCCESS;
+}
 
-uint64_t initial_permutation(uint64_t data_block);
-void div_block64_to_blocks32(uint32_t* left, uint32_t* right, uint64_t block64);
-void sblock_fill(uint8_t sblock6b[8], uint64_t block64b);
-uint8_t sblock_resolve(uint8_t sblock6b, int i);
-uint32_t join4b_to_32b(uint8_t sblock4b[8]);
-uint32_t permutation(uint32_t sblock_joined);
-uint64_t concat_blocks32_to64(uint32_t left_block32, uint32_t right_block32);
-uint64_t final_permutation(uint64_t block64);
-uint64_t encrypt_DES(uint64_t data_block, uint64_t keys48b[16]);
-uint64_t* reverse_array(const uint64_t arr[], int size);
-void printchars(uint64_t value);
-
-
-int main(void)
+int des()
 {
   // key preparations
   uint64_t key = 0b0001001100110100010101110111100110011011101111001101111111110001;
-  // uint64_t key = 0b1111111111111111111111111111111111111111111111111111111101111111;
-  // uint64_t key = 0b0000000000000000000000000000000000000000000000000000000100000001;
   uint64_t keys48b[16] = {0};
   uint64_t* reversed_keys48b;
-  printf("[+] Key: ");
+  puts("[+] Key: ");
   print_binary64(key);
 
   // data preparations
@@ -56,13 +49,6 @@ int main(void)
   // keys generation
   key_gen(keys48b, key);
 
-  // TEST
-  // uint64_t data_test = 0b0000000100100011010001010110011110001001101010111100110111101111;
-  // printf("[+] Data test:\n");
-  // print_binary64(data_test);
-  // encrypt_DES(data_test,keys48b);
-
-
   // ENCRYPTION DATA BY BLOCKS
   for (int i = 0; i < data_size; i++){
     data_encrypted[i] = encrypt_DES(data_plain[i],keys48b);
@@ -78,7 +64,7 @@ int main(void)
   for (int i = 0; i < data_size; i++){
     print_binary64(data_plain[i]);
   }
-  printf("chars:\n");
+  puts("chars:\n");
   for (int i = 0; i < data_size; i++){
     printchars(data_plain[i]);
   }
@@ -88,7 +74,7 @@ int main(void)
   for (int i = 0; i < data_size; i++){
     print_binary64(data_encrypted[i]);
   }
-  printf("chars:\n");
+  puts("chars:\n");
   for (int i = 0; i < data_size; i++){
     printchars(data_encrypted[i]);
   }
@@ -98,7 +84,7 @@ int main(void)
   for (int i = 0; i < data_size; i++){
     print_binary64(data_decrypted[i]);
   }
-  printf("chars:\n");
+  puts("chars:\n");
   for (int i = 0; i < data_size; i++){
     printchars(data_decrypted[i]);
   }
@@ -132,7 +118,7 @@ int32_t fill_text_buffer(uint64_t *pdata)
 void print_binary64(uint64_t value)
 {
   for (int i = 63; i >= 0; i--){
-    printf("%d", (value >> i) & 1);
+    printf("%lu", (value >> i) & 1);
     if (i % 8 == 0){
       printf(" ");
     }
